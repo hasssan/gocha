@@ -1,14 +1,12 @@
-# gocha [![Circle CI](https://circleci.com/gh/jgautheron/gocha.svg?style=svg)](https://circleci.com/gh/jgautheron/gocha) [![GoDoc](https://godoc.org/github.com/jgautheron/gocha?status.png)](https://godoc.org/github.com/jgautheron/gocha)
+# gocha [![Circle CI](https://circleci.com/gh/jgautheron/gocha.svg?style=svg)](https://circleci.com/gh/jgautheron/gocha) [![GoDoc](https://godoc.org/github.com/jgautheron/gocha?status.svg)](https://godoc.org/github.com/jgautheron/gocha)
+
+:warning: **This is a work in progress.**
 
 Gocha is an opinionated tool written in Golang that aim to help teams deal with semver versioning and changelogs.
 Changelogs are generated from commit messages between tags, it supposes that you are using the [AngularJS Git Commit Message Conventions](about-angularjs-...).
 
-// Note about lightweight vs annotated tags
-// gocha will create annotated tags
-// badges: LICENSE, codeship, godoc, coveralls
-
 ## Getting started
-You can directly use the binary (see [Build](build)) or download the project.
+You can directly use the binary (see [Build](build)) or clone the project.
 
 ```go
 go get -u github.com/jgautheron/gocha
