@@ -1,7 +1,5 @@
 # gocha [![Circle CI](https://circleci.com/gh/jgautheron/gocha.svg?style=svg)](https://circleci.com/gh/jgautheron/gocha) [![GoDoc](https://godoc.org/github.com/jgautheron/gocha?status.svg)](https://godoc.org/github.com/jgautheron/gocha)
 
-:warning: **This is a work in progress.**
-
 Gocha is an opinionated tool written in Golang that aim to help teams deal with semver versioning and changelogs.
 Changelogs are generated from commit messages between tags, it supposes that you are using the [AngularJS Git Commit Message Conventions](about-angularjs-...).
 
@@ -106,6 +104,21 @@ OPTIONS:
 ```
 
 ### `changelog`
+
+Generates the changelog file in the specified path.
+
+```
+NAME:
+   changelog generate - generate the changelog
+
+USAGE:
+   command changelog generate [command options] [arguments...]
+
+OPTIONS:
+   --app-name   the application name [$APP_NAME]
+   --tag        generate the changelog from the given tag [$APP_TAG]
+   --output     "CHANGELOG.md"  output file path [$OUTPUT_FILE]
+```
 
 ## Build
 
