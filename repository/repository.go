@@ -307,6 +307,22 @@ func (r *Repository) GetCommitListForTag(tag Tag) ([]Commit, error) {
 	return cmts, nil
 }
 
+// GetOriginURL returns the repository's origin URL.
+func (r *Repository) GetOriginURL() (string, error) {
+	cfg, err := r.repository.Config()
+	if err != nil {
+		return "", err
+	}
+
+	origin, err := cfg.LookupString("remote.origin.url")
+	if err != nil {
+		return "", err
+	}
+
+	origin = strings.Replace(origin, ".git", "", 1)
+	return origin, nil
+}
+
 // buildTag creates a Tag from the given details.
 func (r *Repository) buildTag(tn string, id *git.Oid) (Tag, error) {
 	var cd time.Time
