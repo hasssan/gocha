@@ -4,24 +4,21 @@ package main
 
 import (
 	"os"
-
-	"text/template"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 	"github.com/jgautheron/gocha/bumper"
+	"github.com/jgautheron/gocha/changelog"
 	"github.com/jgautheron/gocha/config"
 	"github.com/jgautheron/gocha/logger"
-	"github.com/jgautheron/gocha/message"
 	"github.com/jgautheron/gocha/repository"
 )
 
 // IDEAS
-// - template file for CHANGELOG
 // - one CHANGELOG per release
 // - codenames only for major & minor
 // - Makefile (make check, make test)
-// - go 1.5 vendor
 
 const (
 	argLogLevel = "log-level"
@@ -37,6 +34,11 @@ const (
 	argPushPublicKey  = "push-public-key"
 	argPushPrivateKey = "push-private-key"
 	argPushPassphrase = "push-passphrase"
+
+	// Changelog settings
+	argAppName    = "app-name"
+	argAppTag     = "tag"
+	argOutputFile = "output"
 
 	// Commands
 	cmdBump              = "bump"
@@ -157,6 +159,23 @@ func main() {
 				Name:   cmdChangelogGenerate,
 				Usage:  "generate the changelog",
 				Action: initGenerate,
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:   argAppName,
+						EnvVar: "APP_NAME",
+						Usage:  "the application name",
+					},
+					cli.StringFlag{
+						Name:   argAppTag,
+						EnvVar: "APP_TAG",
+						Usage:  "generate the changelog from the given tag",
+					},
+					cli.StringFlag{
+						Name:   argOutputFile,
+						EnvVar: "OUTPUT_FILE",
+						Usage:  "output file path",
+					},
+				},
 			},
 		},
 	},
@@ -222,38 +241,28 @@ func initBump(c *cli.Context, bmp string) {
 	bumper.Up(rp, bmp)
 }
 
-func initGenerate(c *cli.Context) {
-	rp := initialize(c)
-
-	tg, err := rp.GetTag("3.41.0")
-	if err != nil {
-		log.Fatal(err)
-	}
-	cmts, err := rp.GetCommitListForTag(tg)
-	if err != nil {
-		log.Fatal(err)
+func getAppName(c *cli.Context) string {
+	if len(c.String(argAppName)) != 0 {
+		return c.String(argAppName)
 	}
 
-	ms, err := message.GetMessageGroup(cmts)
-	if err != nil {
-		log.Fatal(err)
+	path := c.GlobalString(argRepoPath)
+
+	// Use the folder name as the application name
+	idx := strings.LastIndex(path, "/")
+	if idx != -1 {
+		return path[idx+1:]
 	}
 
-	//log.Info(ms["chore"]["readme"])
-	t, _ := template.ParseFiles("template/changelog-template.md")
-
-	clog := changelog{
-		AppName: "NexwayConnect-Driver",
-		Version: "1.1.0",
-		Chores:  ms["chore"],
-	}
-	err = t.Execute(os.Stdout, clog)
-	if err != nil {
-		log.Fatal(err)
-	}
+	return path
 }
 
-type changelog struct {
-	AppName, Version string
-	Chores           map[string][]message.Message
+func initGenerate(c *cli.Context) {
+	outputFile := c.String(argOutputFile)
+	if len(outputFile) == 0 {
+		outputFile = c.GlobalString(argRepoPath)
+	}
+
+	rp := initialize(c)
+	changelog.Generate(rp, c.String(argAppTag), getAppName(c), outputFile)
 }
